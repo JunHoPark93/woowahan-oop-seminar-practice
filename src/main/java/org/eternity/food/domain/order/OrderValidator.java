@@ -1,10 +1,11 @@
 package org.eternity.food.domain.order;
 
-import org.eternity.food.domain.shop.Menu;
-import org.eternity.food.domain.shop.MenuRepository;
-import org.eternity.food.domain.shop.Shop;
-import org.eternity.food.domain.shop.ShopRepository;
+import org.eternity.food.domain.shop.*;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class OrderValidator {
@@ -18,10 +19,20 @@ public class OrderValidator {
         this.menuRepository = menuRepository;
     }
 
-    // shop 검증, menu 가 유효한지 검증
-    public void validateOrder(Order order) {
-        Shop shop = shopRepository.findById(order.getShop().getId()).orElseThrow(RuntimeException::new);
+    public void validate(Order order) {
+        validate(order, getShop(order), getMenus(order));
+    }
 
+    private Map<Long, Menu> getMenus(Order order) {
+        return menuRepository.findAllById(order.getMenuIds())
+                .stream().collect(Collectors.toMap(Menu::getId, Function.identity()));
+    }
+
+    private Shop getShop(Order order) {
+        return shopRepository.findById(order.getShopId()).orElseThrow(RuntimeException::new);
+    }
+
+    private void validate(Order order, Shop shop, Map<Long, Menu> menus) {
         if (order.getOrderLineItems().isEmpty()) {
             throw new IllegalStateException("주문 항목이 비어 있습니다.");
         }
@@ -35,8 +46,26 @@ public class OrderValidator {
         }
 
         for (OrderLineItem orderLineItem : order.getOrderLineItems()) {
-            Menu menu = menuRepository.findById(orderLineItem.getMenuId()).orElseThrow(RuntimeException::new);
-            menu.validateOrder(orderLineItem.getName(), orderLineItem.convertToOptionGroups());
+            validateOrderLineItem(orderLineItem, menus.get(orderLineItem.getMenuId()));
         }
+    }
+
+    private void validateOrderLineItem(OrderLineItem orderLineItem, Menu menu) {
+        if (!orderLineItem.getName().equals(menu.getName())) {
+            throw new IllegalArgumentException("기본 상품이 변경되었습니다");
+        }
+
+        for (OrderOptionGroup group : orderLineItem.getGroups()) {
+            validateOrderOptionGroup(group, menu);
+        }
+    }
+
+    private void validateOrderOptionGroup(OrderOptionGroup group, Menu menu) {
+        for (OptionGroupSpecification optionGroupSpec : menu.getOptionGroupSpecs()) {
+            if (optionGroupSpec.isSatisfiedBy(group.convertToOptionGroup())) {
+                return;
+            }
+        }
+        throw new IllegalArgumentException("메뉴가 변경되었습니다");
     }
 }
