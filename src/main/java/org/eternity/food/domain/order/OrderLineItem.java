@@ -21,10 +21,6 @@ public class OrderLineItem {
     @Column(name="ORDER_LINE_ITEM_ID")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name="MENU_ID")
-    private Menu menu;
-
     @Column(name = "MENU_ID")
     private Long menuId;
 
@@ -38,17 +34,17 @@ public class OrderLineItem {
     @JoinColumn(name="ORDER_LINE_ITEM_ID")
     private List<OrderOptionGroup> groups = new ArrayList<>();
 
-    public OrderLineItem(Menu menu, String name, int count, List<OrderOptionGroup> groups) {
-        this(null, menu, name, count, groups);
+    public OrderLineItem(Long menuId, String name, int count, List<OrderOptionGroup> groups) {
+        this(null, menuId, name, count, groups);
     }
 
     @Builder
-    public OrderLineItem(Long id, Menu menu, String name, int count, List<OrderOptionGroup> groups) {
+    public OrderLineItem(Long id, Long menuId, String name, int count, List<OrderOptionGroup> groups) {
         this.id = id;
-        this.menu = menu;
+        this.menuId = menuId;
         this.name = name;
         this.count = count;
-        this.groups.addAll(groups);
+        this.groups = groups;
     }
 
     OrderLineItem() {
@@ -58,11 +54,7 @@ public class OrderLineItem {
         return Money.sum(groups, OrderOptionGroup::calculatePrice).times(count);
     }
 
-    public void validate() {
-        menu.validateOrder(name, convertToOptionGroups());
-    }
-
-    private List<OptionGroup> convertToOptionGroups() {
+    public List<OptionGroup> convertToOptionGroups() {
         return groups.stream().map(OrderOptionGroup::convertToOptionGroup).collect(toList());
     }
 }

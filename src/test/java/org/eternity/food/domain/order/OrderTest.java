@@ -12,13 +12,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class OrderTest {
-    @Test(expected = IllegalArgumentException.class)
-    public void 가게_미영업시_주문실패() {
-        Order order = anOrder().shop(aShop().open(false).build()).build();
-
-        order.place();
-    }
-
     @Test
     public void 결제완료() {
         Order order = anOrder().status(Order.OrderStatus.ORDERED).build();

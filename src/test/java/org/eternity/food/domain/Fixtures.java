@@ -87,7 +87,7 @@ public class Fixtures {
 
     public static OrderLineItemBuilder anOrderLineItem() {
         return OrderLineItem.builder()
-                .menu(aMenu().build())
+                .menuId(aMenu().build().getId())
                 .name("삼겹살 1인세트")
                 .count(1)
                 .groups(Arrays.asList(

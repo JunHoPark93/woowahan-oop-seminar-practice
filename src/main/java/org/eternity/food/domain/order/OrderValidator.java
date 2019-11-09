@@ -1,5 +1,7 @@
 package org.eternity.food.domain.order;
 
+import org.eternity.food.domain.shop.Menu;
+import org.eternity.food.domain.shop.MenuRepository;
 import org.eternity.food.domain.shop.Shop;
 import org.eternity.food.domain.shop.ShopRepository;
 import org.springframework.stereotype.Component;
@@ -8,12 +10,15 @@ import org.springframework.stereotype.Component;
 public class OrderValidator {
     private final ShopRepository shopRepository;
     private final OrderRepository orderRepository;
+    private final MenuRepository menuRepository;
 
-    public OrderValidator(ShopRepository shopRepository, OrderRepository orderRepository) {
+    public OrderValidator(ShopRepository shopRepository, OrderRepository orderRepository, MenuRepository menuRepository) {
         this.shopRepository = shopRepository;
         this.orderRepository = orderRepository;
+        this.menuRepository = menuRepository;
     }
 
+    // shop 검증, menu 가 유효한지 검증
     public void validateOrder(Order order) {
         Shop shop = shopRepository.findById(order.getShop().getId()).orElseThrow(RuntimeException::new);
 
@@ -30,7 +35,8 @@ public class OrderValidator {
         }
 
         for (OrderLineItem orderLineItem : order.getOrderLineItems()) {
-            orderLineItem.validate();
+            Menu menu = menuRepository.findById(orderLineItem.getMenuId()).orElseThrow(RuntimeException::new);
+            menu.validateOrder(orderLineItem.getName(), orderLineItem.convertToOptionGroups());
         }
     }
 }

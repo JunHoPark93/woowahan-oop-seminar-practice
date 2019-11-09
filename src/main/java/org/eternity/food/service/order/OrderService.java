@@ -25,8 +25,7 @@ public class OrderService {
     @Transactional
     public void placeOrder(Cart cart) {
         Order order = orderMapper.mapFrom(cart);
-        //order.place();
-        order.place2(orderValidator);
+        order.place(orderValidator);
         orderRepository.save(order);
     }
 

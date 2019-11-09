@@ -42,7 +42,7 @@ public class OrderMapper {
                                 .orElseThrow(IllegalArgumentException::new);
 
         return new OrderLineItem(
-                        menu,
+                        menu.getId(),
                         cartLineItem.getName(),
                         cartLineItem.getCount(),
                         cartLineItem.getGroups()
