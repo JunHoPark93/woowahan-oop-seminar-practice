@@ -24,13 +24,8 @@ public class OrderTest {
 
     @Test
     public void 배송완료() {
-        Shop shop = aShop()
-                        .commissionRate(Ratio.valueOf(0.02))
-                        .commission(Money.ZERO)
-                        .build();
-
         Order order = anOrder()
-                        .shop(shop)
+                        .shopId(aShop().build().getId())
                         .status(Order.OrderStatus.PAYED)
                         .items(Arrays.asList(
                             anOrderLineItem()
@@ -44,6 +39,5 @@ public class OrderTest {
         order.delivered();
 
         assertThat(order.getOrderStatus(), is(Order.OrderStatus.DELIVERED));
-        assertThat(shop.getCommission(), is(Money.wons(200)));
     }
 }

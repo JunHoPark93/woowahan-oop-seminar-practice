@@ -25,12 +25,9 @@ public class OrderMapper {
     }
 
     public Order mapFrom(Cart cart) {
-        Shop shop = shopRepository.findById(cart.getShopId())
-                                .orElseThrow(IllegalArgumentException::new);
-
         return new Order(
                         cart.getUserId(),
-                        shop,
+                        cart.getShopId(),
                         cart.getCartLineItems()
                             .stream()
                             .map(this::toOrderLineItem)

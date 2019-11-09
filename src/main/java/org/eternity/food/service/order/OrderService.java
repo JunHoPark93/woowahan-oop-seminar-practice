@@ -1,25 +1,23 @@
 package org.eternity.food.service.order;
 
-import org.eternity.food.domain.delivery.Delivery;
-import org.eternity.food.domain.delivery.DeliveryRepository;
-import org.eternity.food.domain.order.Order;
-import org.eternity.food.domain.order.OrderRepository;
-import org.eternity.food.domain.order.OrderValidator;
+import org.eternity.food.domain.order.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderService {
     private OrderRepository orderRepository;
-    private DeliveryRepository deliveryRepository;
     private OrderMapper orderMapper;
     private OrderValidator orderValidator;
+    private OrderPayService orderPayService;
+    private OrderDeliverService orderDeliverService;
 
-    public OrderService(OrderRepository orderRepository, DeliveryRepository deliveryRepository, OrderMapper orderMapper, OrderValidator orderValidator) {
+    public OrderService(OrderRepository orderRepository, OrderMapper orderMapper, OrderValidator orderValidator, OrderPayService orderPayService, OrderDeliverService orderDeliverService) {
         this.orderRepository = orderRepository;
-        this.deliveryRepository = deliveryRepository;
         this.orderMapper = orderMapper;
         this.orderValidator = orderValidator;
+        this.orderPayService = orderPayService;
+        this.orderDeliverService = orderDeliverService;
     }
 
     @Transactional
@@ -31,19 +29,11 @@ public class OrderService {
 
     @Transactional
     public void payOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(IllegalArgumentException::new);
-        order.payed();
-
-        Delivery delivery = Delivery.started(order.getId());
-        deliveryRepository.save(delivery);
+        orderPayService.payOrder(orderId);
     }
 
     @Transactional
     public void deliverOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(IllegalArgumentException::new);
-        order.delivered();
-
-        Delivery delivery = deliveryRepository.findById(orderId).orElseThrow(IllegalArgumentException::new);
-        delivery.complete();
+        orderDeliverService.deliverOrder(orderId);
     }
 }

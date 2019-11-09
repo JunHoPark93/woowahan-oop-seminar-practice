@@ -79,7 +79,7 @@ public class Fixtures {
     public static OrderBuilder anOrder() {
         return Order.builder()
                 .userId(1L)
-                .shop(aShop().build())
+                .shopId(aShop().build().getId())
                 .status(Order.OrderStatus.ORDERED)
                 .orderedTime(LocalDateTime.of(2020, 1, 1, 12, 0))
                 .items(Arrays.asList(anOrderLineItem().build()));
