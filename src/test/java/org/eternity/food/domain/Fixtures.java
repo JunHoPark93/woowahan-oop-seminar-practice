@@ -35,7 +35,7 @@ public class Fixtures {
 
     public static MenuBuilder aMenu() {
         return Menu.builder()
-                .shop(aShop().build())
+                .shopId(aShop().build().getId())
                 .name("삼겹살 1인세트")
                 .description("삼겹살 + 야채세트 + 김치찌개")
                 .basic(anOptionGroupSpec()

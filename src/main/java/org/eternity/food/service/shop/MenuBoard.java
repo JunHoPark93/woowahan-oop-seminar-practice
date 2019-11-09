@@ -16,12 +16,12 @@ public class MenuBoard {
     private Money minOrderAmount;
     private List<MenuItem> menuItems;
 
-    public MenuBoard(Shop shop) {
+    public MenuBoard(Shop shop, List<Menu> menuItems) {
         this.shopId = shop.getId();
         this.shopName = shop.getName();
         this.open = shop.isOpen();
         this.minOrderAmount = shop.getMinOrderAmount();
-        this.menuItems = toMenuItems(shop.getMenus());
+        this.menuItems = toMenuItems(menuItems);
     }
 
     private List<MenuItem> toMenuItems(List<Menu> menus) {
