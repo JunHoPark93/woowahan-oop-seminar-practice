@@ -4,6 +4,7 @@ import org.eternity.food.domain.delivery.Delivery;
 import org.eternity.food.domain.delivery.DeliveryRepository;
 import org.eternity.food.domain.order.Order;
 import org.eternity.food.domain.order.OrderRepository;
+import org.eternity.food.domain.order.OrderValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,19 +13,20 @@ public class OrderService {
     private OrderRepository orderRepository;
     private DeliveryRepository deliveryRepository;
     private OrderMapper orderMapper;
+    private OrderValidator orderValidator;
 
-    public OrderService(OrderMapper orderMapper,
-                        OrderRepository orderRepository,
-                        DeliveryRepository deliveryRepository) {
-        this.orderMapper = orderMapper;
+    public OrderService(OrderRepository orderRepository, DeliveryRepository deliveryRepository, OrderMapper orderMapper, OrderValidator orderValidator) {
         this.orderRepository = orderRepository;
         this.deliveryRepository = deliveryRepository;
+        this.orderMapper = orderMapper;
+        this.orderValidator = orderValidator;
     }
 
     @Transactional
     public void placeOrder(Cart cart) {
         Order order = orderMapper.mapFrom(cart);
-        order.place();
+        //order.place();
+        order.place2(orderValidator);
         orderRepository.save(order);
     }
 

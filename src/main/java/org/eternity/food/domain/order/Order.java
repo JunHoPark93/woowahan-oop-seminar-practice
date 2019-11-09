@@ -14,7 +14,7 @@ import java.util.List;
 @Table(name="ORDERS")
 @Getter
 public class Order {
-    public enum OrderStatus { ORDERED, PAYED, DELIVERED }
+    public enum OrderStatus { ORDERED, PAYED, DELIVERED;}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,6 +60,11 @@ public class Order {
         ordered();
     }
 
+    public void place2(OrderValidator orderValidator) {
+        orderValidator.validateOrder(this);
+        ordered();
+    }
+
     private void validate() {
         if (orderLineItems.isEmpty()) {
             throw new IllegalStateException("주문 항목이 비어 있습니다.");
@@ -91,7 +96,7 @@ public class Order {
         this.shop.billCommissionFee(calculateTotalPrice());
     }
 
-    private Money calculateTotalPrice() {
+    public Money calculateTotalPrice() {
         return Money.sum(orderLineItems, OrderLineItem::calculatePrice);
     }
 }

@@ -25,6 +25,9 @@ public class OrderLineItem {
     @JoinColumn(name="MENU_ID")
     private Menu menu;
 
+    @Column(name = "MENU_ID")
+    private Long menuId;
+
     @Column(name="FOOD_NAME")
     private String name;
 
