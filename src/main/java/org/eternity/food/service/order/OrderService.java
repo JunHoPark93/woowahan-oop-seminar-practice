@@ -34,7 +34,7 @@ public class OrderService {
         Order order = orderRepository.findById(orderId).orElseThrow(IllegalArgumentException::new);
         order.payed();
 
-        Delivery delivery = Delivery.started(order);
+        Delivery delivery = Delivery.started(order.getId());
         deliveryRepository.save(delivery);
     }
 
